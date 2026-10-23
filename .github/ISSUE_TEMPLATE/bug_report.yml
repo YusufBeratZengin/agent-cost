@@ -1,0 +1,44 @@
+name: Bug report
+description: Something is wrong or the numbers look off
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: agent-cost version
+      description: Output of `agent-cost --version`
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS and Python version
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Include the command and a few SYNTHETIC log lines. Never paste real session content, file paths or secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output / errors
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues
+          required: true
+        - label: I removed personal data and secrets from everything I pasted
+          required: true
