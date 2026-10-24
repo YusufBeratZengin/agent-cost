@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- Reject non-finite prices and report numeric conversion overflow as a price error.
+- Treat non-finite token counts as zero so remaining log records can still be reported.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added

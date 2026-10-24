@@ -164,3 +164,20 @@ def test_parse_helpers() -> None:
     assert parse_timestamp(True) is None and parse_timestamp(None) is None
     assert parse_timestamp(1e30) is None and parse_timestamp("") is None
     assert parse_timestamp([]) is None
+
+
+@pytest.mark.parametrize("value", [float("inf"), -float("inf"), float("nan")])
+def test_non_finite_token_counts_become_zero(value: float) -> None:
+    assert to_int(value) == 0
+
+
+def test_overflowing_token_count_does_not_stop_reading(tmp_path: Path) -> None:
+    f = write_lines(
+        tmp_path / "overflow.jsonl",
+        [
+            '{"model":"demo","usage":{"input_tokens":1e400,"output_tokens":2}}',
+            '{"model":"demo","usage":{"input_tokens":3,"output_tokens":4}}',
+        ],
+    )
+    recs = read_records([f])
+    assert [(r.input_tokens, r.output_tokens) for r in recs] == [(0, 2), (3, 4)]

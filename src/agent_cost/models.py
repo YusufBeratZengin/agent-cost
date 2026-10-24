@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -29,6 +30,8 @@ class Record:
 def to_int(value: Any) -> int:
     """Coerce a JSON value to a non-negative int; anything odd becomes 0."""
     if isinstance(value, bool):
+        return 0
+    if isinstance(value, float) and not math.isfinite(value):
         return 0
     if isinstance(value, (int, float)) and value > 0:
         return int(value)

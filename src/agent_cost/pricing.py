@@ -8,6 +8,7 @@ with ``--prices``.
 from __future__ import annotations
 
 import json
+import math
 import re
 import sys
 from dataclasses import dataclass, field
@@ -127,7 +128,13 @@ def table_from_dict(data: Any) -> PriceTable:
                 )
             if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
                 raise PriceError(f"model {name!r}: {key} must be a non-negative number")
-            values[key] = float(value)
+            try:
+                price = float(value)
+            except OverflowError as exc:
+                raise PriceError(f"model {name!r}: {key} must be a finite number") from exc
+            if not math.isfinite(price):
+                raise PriceError(f"model {name!r}: {key} must be a finite number")
+            values[key] = price
         models[str(name).lower()] = ModelPrice(**values)
     currency = data.get("currency", "USD")
     return PriceTable(models=models, currency=str(currency))

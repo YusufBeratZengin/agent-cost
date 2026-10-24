@@ -105,6 +105,21 @@ def test_bad_price_tables(data: object) -> None:
         table_from_dict(data)
 
 
+@pytest.mark.parametrize("key", ["input", "output", "cache_read", "cache_write"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf"), 10**400])
+def test_non_finite_and_overflowing_prices_rejected(key: str, value: float | int) -> None:
+    with pytest.raises(PriceError, match=key):
+        table_from_dict({"models": {"demo": {key: value}}})
+
+
+@pytest.mark.parametrize("value", ["nan", "inf", "1e400"])
+def test_non_finite_toml_prices_rejected(value: str) -> None:
+    text = f"[models.demo]\ninput = {value}\n"
+    for parse in (parse_toml, _parse_subset):
+        with pytest.raises(PriceError, match="input"):
+            table_from_dict(parse(text))
+
+
 def test_load_prices_errors(tmp_path: Path) -> None:
     with pytest.raises(PriceError, match="cannot read"):
         load_prices(tmp_path / "missing.toml")
